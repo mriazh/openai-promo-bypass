@@ -22,19 +22,33 @@ Prints the Stripe checkout URL to stdout. Open it in a browser to complete signu
 
 ### Flags
 
-| Flag | Required | Description |
-|---|---|---|
-| `--session-file` | yes | Path to file containing `chatgpt.com/api/auth/session` JSON |
-| `--proxy` | yes | Japanese HTTP/HTTPS proxy URL |
+| Flag | Required | Default | Description |
+|---|---|---|---|
+| `--session-file` | yes | — | Path to file containing `chatgpt.com/api/auth/session` JSON. Use `-` to read from stdin. |
+| `--proxy` | yes | — | Japanese HTTP/HTTPS proxy URL |
+| `--country` | no | `ID` | Billing country code |
+| `--currency` | no | `IDR` | Billing currency code |
+| `--verbose` | no | off | Print diagnostic info to stderr |
+| `--json` | no | off | Output result as a JSON object (includes `url`, `promo_id`, `checkout_session_id`) |
+
+### JSON output example
+
+```bash
+python openai_promo_bypass.py --session-file session.json --proxy ... --json
+```
+
+```json
+{"url": "https://checkout.stripe.com/...", "promo_id": "...", "checkout_session_id": "..."}
+```
 
 ## How it works
 
-1. Extracts the access token from the session JSON
-2. Queries OpenAI's account check endpoint through the JP proxy to discover eligible promo campaigns
-3. Creates a checkout session with `chatgptplusplan`, IDR billing, and the JP free-trial promo
+1. Extracts and validates the access token from the session JSON (checks for missing keys and token expiry)
+2. Queries OpenAI's account check endpoint through the JP proxy (with automatic retries) to discover eligible promo campaigns
+3. Creates a checkout session with `chatgptplusplan`, the configured billing country/currency, and the JP free-trial promo
 4. Follows redirects to resolve the final Stripe checkout URL
 
-> **Note:** Billing country (`ID`) and currency (`IDR`) default to Indonesia. Change `billing_details` in the source to use your own country/currency.
+> **Note:** Billing country and currency default to Indonesia (`ID`/`IDR`). Use `--country` and `--currency` to override.
 
 ## Disclaimer
 
