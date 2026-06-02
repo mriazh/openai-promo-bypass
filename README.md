@@ -1,6 +1,6 @@
 # OpenAI Promo Bypass
 
-Bypass OpenAI geo promo restrictions via JP proxy — get a $0 checkout URL.
+An educational tool to observe and analyze regional checkout flow variations using a localized proxy.
 
 ## Important Safety Note
 
@@ -11,6 +11,7 @@ This repository handles OpenAI/ChatGPT session data. A session JSON or access to
 - If you ever shared or committed a session file, sign out of ChatGPT on all devices and rotate/revoke affected sessions before continuing.
 - Do not publish proxy credentials in issues, screenshots, logs, or examples.
 
+
 ## Install
 
 ```bash
@@ -18,6 +19,8 @@ pip install -r requirements.txt
 ```
 
 ## Usage
+
+**💡 Pro Tip:** We highly recommend running a safe test first using the `--dry-run` flag (see examples below). This ensures your setup is correct without making any actual network requests.
 
 Export your OpenAI session JSON from `chatgpt.com/api/auth/session` to a file, then:
 
@@ -27,7 +30,7 @@ python openai_promo_bypass.py \
   --proxy http://user:pass@jp-host:3128
 ```
 
-Prints the Stripe checkout URL to stdout. Open it in a browser to complete signup at $0.
+Prints the generated checkout URL to stdout.
 
 ### Flags
 
@@ -51,20 +54,46 @@ python openai_promo_bypass.py --session-file session.json --proxy ... --json
 {"url": "https://checkout.stripe.com/...", "promo_id": "...", "checkout_session_id": "..."}
 ```
 
-### Dry-run example
+### Dry-run examples (Windows Beginner Friendly)
 
-Validate your configuration safely without making network requests. Tokens and proxy passwords will be heavily sanitized in the output.
+The `--dry-run` flag lets you validate your configuration safely **without making any network requests**. Your proxy credentials and tokens will be heavily sanitized in the output to prevent leaks.
+- `--country` must be exactly 2 letters.
+- `--currency` must be exactly 3 letters.
 
-```bash
-python openai_promo_bypass.py --session-file session.json --proxy http://user:pass@127.0.0.1:8080 --dry-run
+#### PowerShell Example
+*Note: The `@' ... '@` heredoc syntax is specific to PowerShell and will not work in Command Prompt (CMD).*
+
+```powershell
+@'
+{"accessToken":"header.payload.signature"}
+'@ | python .\openai_promo_bypass.py --session-file - --proxy http://user:pass@127.0.0.1:8080 --dry-run
 ```
 
-## How it works
+#### Command Prompt (CMD) Example
+In CMD, you can create a temporary `test.json` file, run the validation, and then delete it.
 
-1. Extracts and validates the access token from the session JSON (checks for missing keys and token expiry)
-2. Queries OpenAI's account check endpoint through the JP proxy (with automatic retries) to discover eligible promo campaigns
-3. Creates a checkout session with `chatgptplusplan`, the configured billing country/currency, and the JP free-trial promo
-4. Follows redirects to resolve the final Stripe checkout URL
+```cmd
+echo {"accessToken":"header.payload.signature"} > test.json
+python openai_promo_bypass.py --session-file test.json --proxy http://user:pass@127.0.0.1:8080 --dry-run
+del test.json
+```
+
+**Expected Safe Output:**
+```text
+--- DRY RUN ---
+Proxy    : http://***@127.0.0.1:8080
+Token    : <VALID_TOKEN_HIDDEN>
+Country  : ID
+Currency : IDR
+All inputs validated successfully. No network requests were made.
+```
+
+## How it works (The Simple Version)
+
+1. **Reads your Session:** The script safely reads your session file to find your access token, checking to make sure it hasn't expired.
+2. **Checks Promos:** It uses the Japanese proxy you provided to check if your account is eligible for the free trial promo.
+3. **Generates a Checkout Link:** It communicates with the API to generate a regional checkout link based on your chosen country/currency.
+4. **Resolves the URL:** It follows the generated link to discover the final localized payment page.
 
 > **Note:** Billing country and currency default to Indonesia (`ID`/`IDR`). Use `--country` and `--currency` to override.
 
