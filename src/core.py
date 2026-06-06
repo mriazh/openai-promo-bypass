@@ -110,8 +110,13 @@ def generate_checkout(token, proxy_url, country, currency, logger_callback=None)
 
     if r.status_code != 200:
         safe_resp = r.text[:200].replace(proxy_url, sanitize_proxy(proxy_url)) if proxy_url else r.text[:200]
-        msg = f"Checkout API returned status {r.status_code}. Response: {safe_resp}"
-        log_error("Checkout API", msg)
+        log_error("Checkout API", f"Status {r.status_code}. Raw response: {safe_resp}")
+        
+        if r.status_code == 403 and "<html" in r.text.lower()[:50]:
+            msg = "Error 403 Forbidden: Blocked by Cloudflare/WAF. Your proxy IP was detected. Please try a different SSH/Proxy server."
+        else:
+            msg = f"Checkout API returned status {r.status_code}. See detailed logs for raw response."
+            
         return False, msg, None, None
 
     try:

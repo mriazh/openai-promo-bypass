@@ -2,8 +2,8 @@ import sys
 import os
 import signal
 from PySide6.QtWidgets import QApplication
-from PySide6.QtGui import QIcon, QPalette, QColor
-from PySide6.QtCore import qInstallMessageHandler, QtMsgType
+from PySide6.QtGui import QIcon, QPalette
+from PySide6.QtCore import qInstallMessageHandler
 from src.gui import MainWindow
 from src.utils import init_logging
 
@@ -78,13 +78,14 @@ def main():
     # Suppress Qt internal cleanup noise before QApplication is created
     qInstallMessageHandler(_qt_message_handler)
     
-    # Allow clean exit via CTRL+C in terminal without Qt cleanup crashes
-    signal.signal(signal.SIGINT, lambda sig, frame: os._exit(0))
-    
     # Initialize logging directory
     init_logging()
     
     app = QApplication(sys.argv)
+    
+    # Allow clean exit via CTRL+C in terminal
+    signal.signal(signal.SIGINT, lambda sig, frame: app.quit())
+    
     app.setStyle("Fusion")
     
     is_dark_mode = apply_theme(app)

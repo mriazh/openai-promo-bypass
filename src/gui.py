@@ -5,11 +5,11 @@ from PySide6.QtWidgets import (
     QTabWidget, QFormLayout, QFileDialog, QMessageBox, QGroupBox,
     QStackedWidget
 )
-from PySide6.QtCore import Qt, QThread, Signal, QObject, QUrl
-from PySide6.QtGui import QFont, QClipboard, QColor, QDesktopServices
+from PySide6.QtCore import Qt, QThread, Signal, QUrl
+from PySide6.QtGui import QFont, QColor, QDesktopServices
 import subprocess
 
-from src.utils import extract_and_validate_session, parse_proxy_string, check_token_expiry, sanitize_proxy, sanitize_token, log_error
+from src.utils import extract_and_validate_session, parse_proxy_string, check_token_expiry, sanitize_proxy
 from src.core import generate_checkout
 from src.ssh_tunnel import SSHTunnelThread
 
@@ -72,9 +72,16 @@ class MainWindow(QMainWindow):
         self.stack.setCurrentIndex(0)
 
     def closeEvent(self, event):
-        # Force exit to prevent QThread "destroyed while running" errors 
-        # from background proxy pinging threads when the app is closed.
-        os._exit(0)
+        # Gracefully shutdown SSH tunnel if active
+        if self._ssh_tunnel and self._ssh_tunnel.isRunning():
+            self._ssh_tunnel.stop()
+            self._ssh_tunnel.wait(3000)
+            self._ssh_tunnel = None
+
+        if hasattr(self, "checkout_thread") and self.checkout_thread.isRunning():
+            self.checkout_thread.wait(1000)
+
+        event.accept()
 
     # --- Setup Screens ---
 
@@ -210,8 +217,8 @@ class MainWindow(QMainWindow):
         ssh_btn_row = QHBoxLayout()
         self.btn_ssh_connect = QPushButton("Connect")
         self.btn_ssh_connect.clicked.connect(self.toggle_ssh_tunnel)
-        self.btn_ssh_clear = QPushButton("Clear")
-        self.btn_ssh_clear.clicked.connect(self.clear_ssh_fields)
+        self.btn_ssh_clear = QPushButton("Clear All")
+        self.btn_ssh_clear.clicked.connect(self.clear_all_proxy_fields)
         self.lbl_ssh_status = QLabel("Disconnected")
         self.lbl_ssh_status.setStyleSheet("color: gray;")
         ssh_btn_row.addWidget(self.btn_ssh_connect)
@@ -445,16 +452,24 @@ class MainWindow(QMainWindow):
             field.setReadOnly(readonly)
         self.manual_group.setEnabled(not readonly)
 
-    def clear_ssh_fields(self):
-        """Disconnect if active, then clear all SSH fields."""
+    def clear_all_proxy_fields(self):
+        """Disconnect if active, then clear all Proxy and SSH fields."""
         if self._ssh_tunnel and self._ssh_tunnel.isRunning():
             self._ssh_tunnel.stop()
             self._ssh_tunnel.wait(3000)
             self._ssh_tunnel = None
             self._ssh_proxy_url = None
+            
+        # Clear SSH fields
         for field in self._ssh_fields:
             field.setReadOnly(False)
             field.clear()
+        
+        # Clear Private Proxy fields
+        self.inp_host.clear()
+        self.inp_port.clear()
+        self.inp_user.clear()
+        self.inp_pass.clear()
         self.inp_ssh_port.setText("22")
         self.inp_ssh_local_port.setText("1080")
         self.btn_ssh_connect.setText("Connect")

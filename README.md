@@ -10,7 +10,13 @@ An incredibly easy-to-use desktop application (GUI) to bypass regional restricti
 
 ---
 
-## Installation (For Beginners)
+## 📥 Download (Easiest Method)
+
+You do not need to install Python. Simply download the ready-to-use `.exe` file from the **[Releases](https://github.com/username/openai-promo-bypass/releases/latest)** page, extract it, and double-click `OpenAI Promo Bypass.exe` to start.
+
+---
+
+## 🛠️ Installation from Source (For Developers)
 
 1. Make sure **Python** (version 3.9 or higher) is installed on your computer.
 2. Download this repository, extract it, and open a terminal (Command Prompt / PowerShell) inside the folder.
@@ -23,7 +29,8 @@ An incredibly easy-to-use desktop application (GUI) to bypass regional restricti
 
 ## How to Use
 
-Run the application with the following command:
+If you downloaded the release, simply double-click **`OpenAI Promo Bypass.exe`**.
+If you are running from source, use the following command:
 ```bash
 python main.py
 ```
@@ -50,7 +57,7 @@ Since promos are region-restricted (usually Japan), you need to route your conne
 - Enter your Host/IP, Port, Username, and Password for your private proxy.
 
 ### 3. "Settings" Tab
-- **Preferred Browser:** Choose which browser you want to use to open the final checkout link (using a different clean browser or incognito mode is highly recommended).
+- **Preferred Browser:** (Located at the top of the window) Choose which browser you want to use to open the final checkout link (using a different clean browser or incognito mode is highly recommended).
 - **Country & Currency:** Leave the defaults (ID & IDR) to display the price in Indonesian Rupiah.
 - Click **"Generate Checkout URL"**.
 - Done! The Checkout URL will appear on your screen. Click "Open in Browser" to proceed with the payment.
