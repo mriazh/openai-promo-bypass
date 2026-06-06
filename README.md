@@ -1,6 +1,6 @@
 # OpenAI Promo Bypass (GUI)
 
-An incredibly easy-to-use desktop application (GUI) to bypass regional restrictions for OpenAI/ChatGPT Promos. Designed to be highly beginner-friendly—no complicated terminal commands required.
+An educational, easy-to-use desktop application (GUI) designed to observe and analyze regional checkout flow variations for OpenAI/ChatGPT Promos. Designed to be highly beginner-friendly—no complicated terminal commands required.
 
 ## Key Features
 - 🖥️ **Visual Interface (GUI):** A simple point-and-click interface.
@@ -12,13 +12,13 @@ An incredibly easy-to-use desktop application (GUI) to bypass regional restricti
 
 ## 📥 Download (Easiest Method)
 
-You do not need to install Python. Simply download the ready-to-use `.exe` file from the **[Releases](https://github.com/username/openai-promo-bypass/releases/latest)** page, extract it, and double-click `OpenAI Promo Bypass.exe` to start.
+You do not need to install Python. Simply download the ready-to-use `.exe` file from the **[Releases](https://github.com/mriazh/openai-promo-bypass/releases/latest)** page, extract it, and double-click `OpenAI Promo Bypass.exe` to start.
 
 ---
 
 ## 🛠️ Installation from Source (For Developers)
 
-1. Make sure **Python** (version 3.9 or higher) is installed on your computer.
+1. Make sure **Python** (version 3.10 or higher) is installed on your computer.
 2. Download this repository, extract it, and open a terminal (Command Prompt / PowerShell) inside the folder.
 3. Install the required dependencies by running this command:
    ```bash

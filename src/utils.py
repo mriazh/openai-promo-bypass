@@ -31,10 +31,6 @@ def sanitize_proxy(url):
         return re.sub(r'://[^@]+@', '://***@', url)
     return url
 
-def sanitize_token(token):
-    if token:
-        return "<VALID_TOKEN_HIDDEN>"
-    return "<NO_TOKEN>"
 
 def parse_proxy_string(proxy_str):
     proxy_str = proxy_str.strip()

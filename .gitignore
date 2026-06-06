@@ -10,4 +10,3 @@ logs/
 # PyInstaller build folders
 build/
 dist/
-*.spec
